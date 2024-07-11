@@ -15,37 +15,24 @@
     {% endblock %}
 
     {% block content %}
-    <table>
-        <th scope="col"></th>
-        <th scope="col"></th>
-        <th scope="col"></th>
-        <th scope="col"></th>
-        <th scope="col"></th>
+    <table class="table table-success table-striped">
+        <tr>
+            <th scope="col">No.</th>
+            <th scope="col">Título</th>
+            <th scope="col">Nombre del autor</th>
+            <th scope="col">Apellido del autor</th>
+            <th scope="col">Editorial</th>
+        </tr>
+        {% for fila in datos %}
+        <tr>
+            <td>{{ fila[0] }}</td>
+            <td>{{ fila[1] }}</td>
+            <td>{{ fila[2] }}</td>
+            <td>{{ fila[3] }}</td>
+            <td>{{ fila[4] }}</td>
+        </tr>
+        {% endfor %}
     </table>
-        <table class="table">
-            {% for fila in datos %}
-            <tr>
-                <td>
-                    {{ fila[0] }}
-                </td>
-                <td>
-                    {{ fila[1] }}
-                </td>
-                <td>
-                    {{ fila[2] }}
-                </td>
-                <td>
-                    {{ fila[3] }}
-                </td>
-                <td>
-                    {{ fila[4] }}
-                </td>
-                <td>
-                    {{ fila[5] }}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
     {% endblock %}
 {% endblock %}
 
