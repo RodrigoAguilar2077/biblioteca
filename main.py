@@ -12,6 +12,11 @@ bootstrap = Bootstrap(app)
 def index():
     return render_template('base.html')
 
+@app.errorhandler(404)
+def error404(error):
+    return render_template('404.html')
+
+
 @app.route('/libros')
 def libros():
     #conectar con la base de datos
@@ -62,7 +67,7 @@ def paises():
 
     cursor = conexion.cursor()
     #ejecutar un consulta en postgres
-    cursor.execute('''SELECT * FROM pais''')
+    cursor.execute('''SELECT * FROM pais ORDER BY id_pais''')
     #recuperar la informacion
     datos=cursor.fetchall()
     #cerrar cursor y conexion a la base de datos
@@ -102,3 +107,17 @@ def update1_pais(id_pais):
     cursor.close()
     conexion.close()
     return render_template('editar_pais.html', datos=datos)
+
+@app.route('/update2_pais/<int:id_pais>', methods=['POST'])
+def update2_pais(id_pais):
+    nombre = request.form['nombre']
+    #conectar con la base de datos
+    conexion = psycopg2.connect(
+        database="biblioteca3a", user="postgres", password="daftpunk2077", host="localhost", port="5432"
+    )
+    #crear un cursor (objeto para recorrer las tablas)
+    cursor = conexion.cursor()
+    cursor.execute('''UPDATE pais SET nombre=%s WHERE id_pais=%s''', (nombre, id_pais))
+    conexion.commit()
+    cursor.close()
+    return redirect(url_for('index'))
