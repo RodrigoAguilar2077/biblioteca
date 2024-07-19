@@ -4,9 +4,14 @@ from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms.fields import PasswordField, StringField, SubmitField
 import db
+from forms import LibrosForm
+# from flask_wtf import CSRFProtect
+
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
+app.config['SECRET-KEY']= 'SUPER SECRETO'
+# csrf = CSRFProtect(app)
 
 
 @app.route('/')
@@ -32,6 +37,30 @@ def libros():
     cursor.close()
     db.desconestar(conn)
     return render_template('libros.html', datos=datos)
+
+
+@app.route('/insertar_libro', methods=['GET', 'POST'])
+def insertar_libro():
+    #si se dio clic en el boton del form y no faltan datos, se recupera la informacion que el user escriba en el form
+    form = LibrosForm()
+    if form.validate_on_submit():
+        titulo= form.titulo.data
+        fk_autor= form.fk_autor_data
+        fk_editorial= form.fk_editorial.data
+        edicion= form.edicion.data
+        #insertar los datos
+        conn = db.conectar()
+        cursor = conn.cursor()
+        cursor.execute('''
+        INSERT INTO libro (titulo, fk_autor, fk_editorial, edicion)
+                     VALUES (%s, %s, %s, %s)
+        ''', (titulo, fk_autor, fk_editorial, edicion))
+        conn.commit()
+        cursor.close()
+        db.desconestar()
+        return redirect(url_for('libro'))
+
+    return render_template('insertar_lobro.html', form=form)
 
 @app.route('/autores')
 def autores():
