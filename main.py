@@ -1,5 +1,5 @@
 import psycopg2
-from flask import Flask, request, redirect, render_template, url_for
+from flask import Flask, request, redirect, render_template, url_for, flash
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms.fields import PasswordField, StringField, SubmitField
@@ -10,7 +10,7 @@ from forms import LibrosForm
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
-app.config['SECRET-KEY']= 'SUPER SECRETO'
+app.config['SECRET_KEY']= 'SUPER SECRETO'
 # csrf = CSRFProtect(app)
 
 
@@ -35,20 +35,20 @@ def libros():
     datos=cursor.fetchall()
     #cerrar cursor y conexion a la base de datos
     cursor.close()
-    db.desconestar(conn)
+    db.desconectar(conn)
     return render_template('libros.html', datos=datos)
 
 
 @app.route('/insertar_libro', methods=['GET', 'POST'])
 def insertar_libro():
-    #si se dio clic en el boton del form y no faltan datos, se recupera la informacion que el user escriba en el form
+    # si se dio clic en el boton del form y no faltan datos, se recupera la informacion que el user escriba en el form
     form = LibrosForm()
     if form.validate_on_submit():
-        titulo= form.titulo.data
-        fk_autor= form.fk_autor_data
-        fk_editorial= form.fk_editorial.data
-        edicion= form.edicion.data
-        #insertar los datos
+        titulo = form.titulo.data
+        fk_autor = form.fk_autor.data
+        fk_editorial = form.fk_editorial.data
+        edicion = form.edicion.data
+        # insertar los datos
         conn = db.conectar()
         cursor = conn.cursor()
         cursor.execute('''
@@ -57,10 +57,12 @@ def insertar_libro():
         ''', (titulo, fk_autor, fk_editorial, edicion))
         conn.commit()
         cursor.close()
-        db.desconestar()
-        return redirect(url_for('libro'))
+        db.desconectar(conn)
+        flash('LIBRO AÑADIDO CORRECTO')
+        return redirect(url_for('libros'))  # Corrige el nombre de la función para redirigir
 
-    return render_template('insertar_lobro.html', form=form)
+    return render_template('insertar_libro.html', form=form)
+
 
 @app.route('/autores')
 def autores():
@@ -76,7 +78,7 @@ def autores():
     datos=cursor.fetchall()
     #cerrar cursor y conexion a la base de datos
     cursor.close()
-    db.desconestar(conn)
+    db.desconectar(conn)
 
     return render_template('autores.html', datos=datos)
 
@@ -95,7 +97,7 @@ def paises():
     datos=cursor.fetchall()
     #cerrar cursor y conexion a la base de datos
     cursor.close()
-    db.desconestar(conn)
+    db.desconectar(conn)
 
     return render_template('paises.html', datos=datos)
 
@@ -112,7 +114,7 @@ def delete_pais(id_pais):
     cursor.execute('''DELETE FROM pais WHERE id_pais=%s''', (id_pais,))
     conn.commit()
     cursor.close()
-    db.desconestar(conn)
+    db.desconectar(conn)
 
     return redirect(url_for('index'))
 
@@ -126,7 +128,7 @@ def update1_pais(id_pais):
     cursor.execute('''SELECT * FROM pais WHERE id_pais=%s''', (id_pais,))
     datos=cursor.fetchall()
     cursor.close()
-    db.desconestar(conn)
+    db.desconectar(conn)
 
     return render_template('editar_pais.html', datos=datos)
 

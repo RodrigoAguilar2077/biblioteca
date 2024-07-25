@@ -14,5 +14,5 @@ connection_pool = pool.SimpleConnectionPool(
 def conectar():
     return connection_pool.getconn()
 
-def desconestar(conn):
+def desconectar(conn):
     connection_pool.putconn(conn)
