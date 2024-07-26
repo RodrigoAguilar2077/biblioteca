@@ -1,0 +1,32 @@
+{% extends 'bootstrap/base.html' %}
+{% block head %}
+    {{ super() }}
+    <title>
+        {% block title %}
+            Biblioteca Web App - Editar libros
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="../static/assets/style/style.css">
+{% endblock %}
+
+{% block body %}
+    {% block navbar %}
+        {% include 'navbar.html' %}
+    {% endblock %}
+
+    {% block content %}
+    <div class="container-fluid">
+        <h2>Edición de nombre del país</h2>
+        <br>
+        {% for pais in datos %}
+        <form action="{{ url_for('update2_libro',nombre=libro[1],id_libro=libro[0]) }}" method="post">
+                <input type="hidden" name="id" value="{{libro[0]}}">
+                <label for="nombre">Nombre del libro</label>
+                <input type="text" name="nombre" value="{{libro[1]}}">
+                <input type="submit" value="Actualizar">
+                <a href="{{url_for('index')}}">Cancelar</a>
+        </form>
+        {% endfor %}
+    </div>
+    {% endblock %}
+{% endblock %}

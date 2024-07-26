@@ -9,3 +9,29 @@
     margin-top: 10px;
     color: cadetblue;
 }
+
+.form-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-control-label {
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.container-md h2 {
+    margin-bottom: 30px;
+}
+
+.table thead th {
+    background-color: #343a40;
+    color: white;
+}

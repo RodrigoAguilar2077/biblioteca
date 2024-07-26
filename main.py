@@ -41,14 +41,12 @@ def libros():
 
 @app.route('/insertar_libro', methods=['GET', 'POST'])
 def insertar_libro():
-    # si se dio clic en el boton del form y no faltan datos, se recupera la informacion que el user escriba en el form
     form = LibrosForm()
     if form.validate_on_submit():
         titulo = form.titulo.data
-        fk_autor = form.fk_autor.data
+        fk_autor = form.fk_autor.data  # Cambio aquí
         fk_editorial = form.fk_editorial.data
         edicion = form.edicion.data
-        # insertar los datos
         conn = db.conectar()
         cursor = conn.cursor()
         cursor.execute('''
@@ -57,11 +55,12 @@ def insertar_libro():
         ''', (titulo, fk_autor, fk_editorial, edicion))
         conn.commit()
         cursor.close()
-        db.desconectar(conn)
-        flash('LIBRO AÑADIDO CORRECTO')
+        db.desconectar(conn)  # Cambio aquí
+        flash('LIBRO AÑADIDO CORRECTAMENTE')
         return redirect(url_for('libros'))  # Corrige el nombre de la función para redirigir
 
     return render_template('insertar_libro.html', form=form)
+
 
 
 @app.route('/autores')
@@ -73,7 +72,7 @@ def autores():
 
     cursor = conn.cursor()
     #ejecutar un consulta en postgres
-    cursor.execute('''SELECT * FROM autores_view''')
+    cursor.execute('''SELECT * FROM autores_view ORDER BY id_autor''')
     #recuperar la informacion
     datos=cursor.fetchall()
     #cerrar cursor y conexion a la base de datos
@@ -142,4 +141,46 @@ def update2_pais(id_pais):
     cursor.execute('''UPDATE pais SET nombre=%s WHERE id_pais=%s''', (nombre, id_pais))
     conn.commit()
     cursor.close()
+    return redirect(url_for('index'))
+
+@app.route('/update1_libro/<int:id_libro>', methods=['POST'])
+def update1_libro(id_libro):
+    conn = db.conectar()
+    #conectar con la base de datos
+    #crear un cursor (objeto para recorrer las tablas)
+    cursor = conn.cursor()
+    #recuperar el registro del pais seleccionado
+    cursor.execute('''SELECT * FROM libro WHERE id_libro=%s''', (id_libro,))
+    datos=cursor.fetchall()
+    cursor.close()
+    db.desconectar(conn)
+
+    return render_template('editar_libro.html', datos=datos)
+
+@app.route('/update2_libro/<int:id_libro>', methods=['POST'])
+def update2_libro(id_libro):
+    conn = db.conectar()
+    nombre = request.form['nombre']
+    #conectar con la base de datos
+    #crear un cursor (objeto para recorrer las tablas)
+    cursor = conn.cursor()
+    cursor.execute('''UPDATE libro SET nombre=%s WHERE id_libro=%s''', (nombre, id_libro))
+    conn.commit()
+    cursor.close()
+    return redirect(url_for('index'))
+
+@app.route('/delete_libro/<int:id_libro>', methods=['POST'])
+def delete_libro(id_libro):
+    conn = db.conectar()
+    #conectar con la base de datos
+
+    #crear un cursor (objeto para recorrer las tablas)
+
+    cursor = conn.cursor()
+    #Borrar el registro con el id_pais seleccionado
+    cursor.execute('''DELETE FROM libro WHERE id_libro=%s''', (id_libro,))
+    conn.commit()
+    cursor.close()
+    db.desconectar(conn)
+
     return redirect(url_for('index'))
